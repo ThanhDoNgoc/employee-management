@@ -2,7 +2,7 @@ import { controller, httpGet, httpPost } from "inversify-express-utils";
 import "reflect-metadata";
 
 import { inject } from "inversify";
-import { Request } from "express";
+import { Request, Response } from "express";
 import IAuthServices from "../services/auth/iauth.services";
 import IUser from "../model/iuser.model";
 import { TYPES } from "../../../inversify/types";
@@ -12,18 +12,18 @@ import { role } from "../utils/user.role";
 export default class AuthController {
   private authServices: IAuthServices;
 
-  constructor(@inject(TYPES.Auth) _userServices: IAuthServices) {
-    this.authServices = _userServices;
+  constructor(@inject(TYPES.Auth) _authServices: IAuthServices) {
+    this.authServices = _authServices;
   }
 
   @httpGet("")
-  public async login(request: Request) {
+  public async login(request: Request, response: Response) {
     try {
       const username: string = request.body.username;
       const password: string = request.body.password;
       return await this.authServices.login(username, password);
     } catch (error) {
-      console.log(error);
+      return response.status(405).send({ message: "Server error!" });
     }
   }
 
@@ -32,24 +32,23 @@ export default class AuthController {
     try {
       const user: IUser = request.body;
       user.teams = [];
-
-      switch (request.body.role) {
-        case "admin":
-          user.role = role.admin;
-          break;
-        case "leader":
-          user.role = role.leader;
-          break;
-        case "member":
-          user.role = role.member;
-          break;
-        default:
-          user.role = role.member;
-          break;
+      if (request.body.role) {
+        switch (request.body.role) {
+          case "admin":
+            user.role = role.admin;
+            break;
+          case "leader":
+            user.role = role.leader;
+            break;
+          case "member":
+            user.role = role.member;
+            break;
+          default:
+            user.role = role.member;
+            break;
+        }
       }
       return await this.authServices.register(user);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 }
