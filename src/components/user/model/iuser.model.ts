@@ -11,3 +11,10 @@ export default interface IUser extends Document {
   teams?: string[];
   isDeleted?: boolean;
 }
+
+export interface IUserUpdate {
+  password?: string;
+  name?: string;
+  role?: role;
+  status?: status;
+}
