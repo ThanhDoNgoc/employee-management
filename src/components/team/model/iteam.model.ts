@@ -1,6 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
-import IUser from "../../user/model/iuser.model";
-
+import { Document, Schema } from "mongoose";
 
 export default interface ITeam extends Document {
   name: string;

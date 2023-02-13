@@ -19,7 +19,7 @@ export class App {
   public async start() {
     this.initMiddleware();
 
-    let appConfigured = new InversifyExpressServer(
+    const appConfigured = new InversifyExpressServer(
       container,
       null,
       { rootPath: "/api" },
