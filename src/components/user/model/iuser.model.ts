@@ -6,8 +6,8 @@ export default interface IUser extends Document {
   username: string;
   password: string;
   name: string;
-  role: role;
-  status: status;
-  teams: string[];
-  isDeleted: boolean;
+  role?: role;
+  status?: status;
+  teams?: string[];
+  isDeleted?: boolean;
 }

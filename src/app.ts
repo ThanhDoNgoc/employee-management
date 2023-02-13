@@ -2,6 +2,10 @@ import "reflect-metadata";
 import express, { Express } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import container from "./inversify/inversify.config";
+import { InversifyExpressServer } from "inversify-express-utils";
+
+import "./components/user/controllers/auth.controller";
 
 export class App {
   private app: Express;
@@ -14,8 +18,15 @@ export class App {
   public async start() {
     this.initMiddleware();
 
-    this.app.listen(this.port, () => {
-      console.log(`Application is running on http://localhost:${this.port}`);
+    let appConfigured = new InversifyExpressServer(
+      container,
+      null,
+      { rootPath: "/api" },
+      this.app
+    ).build();
+
+    appConfigured.listen(this.port, () => {
+      console.log(`Server listening on http://localhost:${this.port}`);
     });
   }
 

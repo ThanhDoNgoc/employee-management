@@ -3,6 +3,7 @@ import { model, Schema } from "mongoose";
 import IUser from "./iuser.model";
 import { status } from "../utils/user.status";
 import { role } from "../utils/user.role";
+import Password from "../utils/user.password";
 
 const UserSchema: Schema = new Schema<IUser>({
   username: {
@@ -37,6 +38,13 @@ const UserSchema: Schema = new Schema<IUser>({
     type: Boolean,
     default: false,
   },
+});
+
+UserSchema.pre("save", async function () {
+  if (this.isModified("password")) {
+    const hashPassword = await Password.hash(this.get("password"));
+    this.set("password", hashPassword);
+  }
 });
 
 const User = model("User", UserSchema);
