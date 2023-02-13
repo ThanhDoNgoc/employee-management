@@ -1,6 +1,6 @@
 import ITeam from "../model/iteam.model";
 import ITeamServices from "./iteam.services";
-import Team from "../model/team.model" 
+import Team from "../model/team.model";
 
 export default class TeamServices implements ITeamServices {
   public async create(team: ITeam) {
@@ -19,9 +19,11 @@ export default class TeamServices implements ITeamServices {
     return await Team.findById(_id);
   }
   public async delete(_id: string) {
-    return await Team.findByIdAndUpdate(_id, {isDeleted : true}).then((team: ITeam) => {
-      const data = {name: team.name, isDeleted: team.isDeleted}
-      return data;
-    });
+    return await Team.findByIdAndUpdate(_id, { isDeleted: true }).then(
+      (team: ITeam) => {
+        const data = { name: team.name, isDeleted: team.isDeleted };
+        return data;
+      }
+    );
   }
 }

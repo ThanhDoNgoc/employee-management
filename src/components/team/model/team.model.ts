@@ -8,18 +8,18 @@ const TeamSchema: Schema = new Schema<ITeam>({
     unique: true,
   },
   leaderId: {
-    type: Schema.Types.ObjectId ,
+    type: Schema.Types.ObjectId,
   },
   members: [
     {
       type: Schema.Types.ObjectId,
     },
   ],
-  isDeleted:{
+  isDeleted: {
     type: Boolean,
-    required : true,
+    required: true,
     default: false,
-  }
+  },
 });
 
 export default model<ITeam>("Team", TeamSchema);
