@@ -6,6 +6,7 @@ import container from "./inversify/inversify.config";
 import { InversifyExpressServer } from "inversify-express-utils";
 
 import "./components/user/controllers/auth.controller";
+import "./components/user/controllers/user.controller";
 
 export class App {
   private app: Express;
