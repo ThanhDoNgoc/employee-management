@@ -12,12 +12,16 @@ import {
   isAdmin,
   isLeader,
   canAccessUser,
+  canAccessTeam,
 } from "../middleware/auth.middleware";
+import ITeamServices from "../components/team/services/iteam.services";
+import TeamServices from "../components/team/services/team.services";
 
 const container = new Container();
 
 container.bind<IAuthServices>(TYPES.Auth).to(AuthServices).inRequestScope();
 container.bind<IUserServices>(TYPES.User).to(UserServices).inRequestScope();
+container.bind<ITeamServices>(TYPES.Team).to(TeamServices).inRequestScope();
 
 container.bind<express.RequestHandler>("isLogin").toConstantValue(isLogin);
 container.bind<express.RequestHandler>("idAdmin").toConstantValue(isAdmin);
@@ -25,5 +29,8 @@ container.bind<express.RequestHandler>("isLeader").toConstantValue(isLeader);
 container
   .bind<express.RequestHandler>("canAccessUser")
   .toConstantValue(canAccessUser);
+container
+  .bind<express.RequestHandler>("canAccessTeam")
+  .toConstantValue(canAccessTeam);
 
 export default container;
