@@ -37,6 +37,10 @@ export default class UserServices implements IUserServices {
   async getById(_id: string): Promise<IUser> {
     return await User.findById(_id);
   }
+  async getByManyId(_ids: Schema.Types.ObjectId[]): Promise<IUserReturnData[]> {
+    const users = await User.find({ _id: { $in: _ids } });
+    return users.map((team) => this.returnUserData(team));
+  }
   async delete(_id: string): Promise<IUserDeletedReturnData> {
     return await User.findByIdAndUpdate(_id, { isDeleted: true }).then(
       (user: IUser) => {
