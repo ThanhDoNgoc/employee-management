@@ -20,8 +20,8 @@ import { status } from "../../user/utils/user.status";
 
 @controller(
   "/team",
-  container.get<express.RequestHandler>("isLogin"),
-  container.get<express.RequestHandler>("canAccessUser")
+  container.get<express.RequestHandler>("authorization"),
+  container.get<express.RequestHandler>("canModifyTeam")
 )
 export default class TeamController {
   private teamServices: ITeamServices;

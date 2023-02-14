@@ -52,8 +52,8 @@ export default class UserController {
 
   @httpGet(
     "/all",
-    container.get<express.RequestHandler>("isLogin"),
-    container.get<express.RequestHandler>("canAccessUser")
+    container.get<express.RequestHandler>("authorization"),
+    container.get<express.RequestHandler>("canModifyUser")
   )
   public async getAll(response: Response) {
     try {
@@ -66,8 +66,8 @@ export default class UserController {
 
   @httpGet(
     "/:id",
-    container.get<express.RequestHandler>("isLogin"),
-    container.get<express.RequestHandler>("canAccessUser")
+    container.get<express.RequestHandler>("authorization"),
+    container.get<express.RequestHandler>("canModifyUser")
   )
   public async getById(request: Request, response: Response) {
     try {
@@ -82,8 +82,8 @@ export default class UserController {
 
   @httpPost(
     "/",
-    container.get<express.RequestHandler>("isLogin"),
-    container.get<express.RequestHandler>("canAccessUser")
+    container.get<express.RequestHandler>("authorization"),
+    container.get<express.RequestHandler>("canModifyUser")
   )
   public async createUser(request: Request, response: Response) {
     try {
@@ -109,8 +109,8 @@ export default class UserController {
 
   @httpPut(
     "/:id",
-    container.get<express.RequestHandler>("isLogin"),
-    container.get<express.RequestHandler>("canAccessUser")
+    container.get<express.RequestHandler>("authorization"),
+    container.get<express.RequestHandler>("canModifyUser")
   )
   public async updateUser(request: Request, response: Response) {
     try {
@@ -148,8 +148,8 @@ export default class UserController {
 
   @httpDelete(
     "/:id",
-    container.get<express.RequestHandler>("isLogin"),
-    container.get<express.RequestHandler>("canAccessUser")
+    container.get<express.RequestHandler>("authorization"),
+    container.get<express.RequestHandler>("canModifyUser")
   )
   public async deleteUser(request: Request, response: Response) {
     try {

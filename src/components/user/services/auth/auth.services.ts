@@ -23,6 +23,7 @@ export default class AuthServices implements IAuthServices {
 
     const token = jwt.sign(
       {
+        _id: user._id,
         role: user.role,
       },
       process.env.JWT_SECRET,

@@ -8,11 +8,11 @@ import IUserServices from "../components/user/services/user/iuser.services";
 import UserServices from "../components/user/services/user/user.services";
 import * as express from "express";
 import {
-  isLogin,
+  authorization,
   isAdmin,
   isLeader,
-  canAccessUser,
-  canAccessTeam,
+  canModifyUser,
+  canModifyTeam,
 } from "../middleware/auth.middleware";
 import ITeamServices from "../components/team/services/iteam.services";
 import TeamServices from "../components/team/services/team.services";
@@ -23,14 +23,16 @@ container.bind<IAuthServices>(TYPES.Auth).to(AuthServices).inRequestScope();
 container.bind<IUserServices>(TYPES.User).to(UserServices).inRequestScope();
 container.bind<ITeamServices>(TYPES.Team).to(TeamServices).inRequestScope();
 
-container.bind<express.RequestHandler>("isLogin").toConstantValue(isLogin);
+container
+  .bind<express.RequestHandler>("authorization")
+  .toConstantValue(authorization);
 container.bind<express.RequestHandler>("idAdmin").toConstantValue(isAdmin);
 container.bind<express.RequestHandler>("isLeader").toConstantValue(isLeader);
 container
-  .bind<express.RequestHandler>("canAccessUser")
-  .toConstantValue(canAccessUser);
+  .bind<express.RequestHandler>("canModifyUser")
+  .toConstantValue(canModifyUser);
 container
-  .bind<express.RequestHandler>("canAccessTeam")
-  .toConstantValue(canAccessTeam);
+  .bind<express.RequestHandler>("canModifyTeam")
+  .toConstantValue(canModifyTeam);
 
 export default container;
