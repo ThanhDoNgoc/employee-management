@@ -58,7 +58,7 @@ export default class UserController {
     try {
       return await this.userServices.getAll();
     } catch (error) {
-      return response.status(405).send({ message: "Server error!" });
+      return response.status(500).send({ message: "Server error!" });
     }
   }
 
@@ -80,9 +80,11 @@ export default class UserController {
 
       user.status = status.available;
 
-      return await this.userServices.create(user);
+      const createdUser = await this.userServices.create(user);
+
+      return response.status(201).send(createdUser);
     } catch (error) {
-      return response.status(405).send({ message: "Server error!" });
+      return response.status(500).send({ message: "Server error!" });
     }
   }
 
@@ -116,9 +118,11 @@ export default class UserController {
         user.status = this.loadUserStatus(request.body.status);
       }
 
-      return await this.userServices.updateById(_id, user);
+      await this.userServices.updateById(_id, user);
+
+      return response.status(204).send({ message: "Updated" });
     } catch (error) {
-      return response.status(405).send({ message: "Server error!" });
+      return response.status(500).send({ message: "Server error!" });
     }
   }
 
@@ -139,9 +143,10 @@ export default class UserController {
         return response.status(403).send({ message: "Forbidden" });
       }
 
-      return await this.userServices.delete(_id);
+      await this.userServices.delete(_id);
+      return response.status(204).send({ message: "Deleted" });
     } catch (error) {
-      return response.status(405).send({ message: "Server error!" });
+      return response.status(500).send({ message: "Server error!" });
     }
   }
 }
