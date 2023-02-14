@@ -18,14 +18,14 @@ export function isLogin(
 ) {
   try {
     if (!request.header("Authorization"))
-      return response.status(403).send({ message: "Forbidden!" });
+      return response.status(401).send({ message: "Unauthorized!" });
 
     const token: string = request
       .header("Authorization")
       .replace("Bearer ", "");
 
     if (!token) {
-      return response.status(403).send({ message: "Forbidden!" });
+      return response.status(401).send({ message: "Unauthorized!" });
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
@@ -36,7 +36,7 @@ export function isLogin(
       next();
     });
   } catch (error) {
-    return response.status(403).send({ message: "Forbidden!" });
+    return response.status(500).send({ message: "Server Error" });
   }
 }
 
@@ -54,7 +54,7 @@ export function isAdmin(
 
     return response.status(403).send({ message: "Forbidden!" });
   } catch (error) {
-    return response.status(403).send({ message: "Forbidden!" });
+    return response.status(500).send({ message: "Server Error" });
   }
 }
 
@@ -71,7 +71,7 @@ export function isLeader(
 
     return response.status(403).send({ message: "Forbidden!" });
   } catch (error) {
-    return response.status(403).send({ message: "Forbidden!" });
+    return response.status(500).send({ message: "Server Error" });
   }
 }
 
@@ -85,9 +85,8 @@ export function canAccessUser(
       next();
       return;
     }
-    console.log("throw err");
     return response.status(403).send({ message: "Forbidden!" });
   } catch (error) {
-    return response.status(403).send({ message: "Forbidden!" });
+    return response.status(500).send({ message: "Server Error" });
   }
 }
