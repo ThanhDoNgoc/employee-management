@@ -8,7 +8,7 @@ export default interface IUserServices {
   create(user: IUser): Promise<IUserReturnData>;
   updateById(_id: string, user: IUserUpdate): Promise<IUserReturnData>;
   getAll(): Promise<IUserReturnData[]>;
-  getById(_id: string): Promise<IUser>;
+  getById(_id: string | Schema.Types.ObjectId): Promise<IUser>;
   getByManyId(_ids: Schema.Types.ObjectId[]): Promise<IUserReturnData[]>;
   delete(_id: string): Promise<IUserDeletedReturnData>;
   addTeam(user: IUser, teamId: Schema.Types.ObjectId): Promise<IUserReturnData>;
