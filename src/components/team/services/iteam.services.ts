@@ -9,6 +9,7 @@ export default interface ITeamServices {
   getAll(): Promise<ITeamReturnData[]>;
   getById(_id: string): Promise<ITeam | null>;
   getByName(name: string): Promise<ITeamReturnData | null>;
+  getByManyId(_ids: Schema.Types.ObjectId[]): Promise<ITeamReturnData[]>;
 
   removeLeader(team: ITeam): Promise<ITeamReturnData>;
   removeMember(

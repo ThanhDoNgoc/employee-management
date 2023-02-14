@@ -38,6 +38,13 @@ export default class TeamServices implements ITeamServices {
     return await Team.findById(_id);
   }
 
+  public async getByManyId(
+    _ids: Schema.Types.ObjectId[]
+  ): Promise<ITeamReturnData[]> {
+    const teams = await Team.find({ _id: { $in: _ids } });
+    return teams.map((team) => this.returnTeamData(team));
+  }
+
   public async getByName(name: string): Promise<ITeamReturnData | null> {
     const team = await Team.findOne({ name: name });
     if (!team) return null;
