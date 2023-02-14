@@ -14,9 +14,9 @@ import { TYPES } from "../../../inversify/types";
 import container from "../../../inversify/inversify.config";
 import ITeamServices from "../services/iteam.services";
 import IUserServices from "../../user/services/user/iuser.services";
-import ITeamReturnData from "../utils/team.return.data";
 import logger from "../../../utils/logger";
 import { role } from "../../user/utils/user.role";
+import { status } from "../../user/utils/user.status";
 
 @controller(
   "/team",
@@ -37,7 +37,8 @@ export default class TeamController {
   @httpGet("/")
   public async getAll(response: Response) {
     try {
-      return await this.teamServices.getAll();
+      const allTeams = await this.teamServices.getAll();
+      return response.status(200).send(allTeams);
     } catch (error) {
       return response.status(500).send({ message: "Server error!" });
     }
@@ -48,7 +49,7 @@ export default class TeamController {
     try {
       const id = request.body.id;
       const team = await this.teamServices.getById(id);
-      return this.teamServices.returnTeamData(team);
+      return response.status(200).send(this.teamServices.returnTeamData(team));
     } catch (error) {
       return response.status(500).send({ message: "Server error!" });
     }
@@ -62,7 +63,9 @@ export default class TeamController {
         return response.status(400).send({ message: "Name exits" });
       }
       logger.info(" pass name valid");
-      return await this.teamServices.create(name);
+      const newTeam = await this.teamServices.create(name);
+      logger.info("Created new Team: ", newTeam);
+      return response.status(201).send("Created team: ", newTeam);
     } catch (error) {
       logger.error("Error at createTeam ", error);
       return response.status(500).send({ message: "Server error!" });
@@ -98,13 +101,20 @@ export default class TeamController {
           .send({ message: "This team already have leader" });
       }
 
-      if (!leader || !team || leader.role !== role.leader) {
+      if (
+        !leader ||
+        !team ||
+        leader.role !== role.leader ||
+        leader.status === status.unavailable
+      ) {
         return response
           .status(404)
           .send({ message: "Not found team or leader" });
       }
 
-      return await this.teamServices.addLeader(team, leader._id);
+      const addTeamLeader = await this.teamServices.addLeader(team, leader._id);
+      logger.info("Added team leader: ", addTeamLeader);
+      return response.status(204).send(addTeamLeader);
     } catch (error) {
       return response.status(500).send({ message: "Server error!" });
     }
@@ -121,7 +131,9 @@ export default class TeamController {
         response.status(404).send({ message: "Not found team or leader" });
       }
 
-      return await this.teamServices.removeLeader(team);
+      const removeTeamLeader = await this.teamServices.removeLeader(team);
+      logger.info("Removed team leader: ", removeTeamLeader);
+      return response.status(204).send(removeTeamLeader);
     } catch (error) {
       return response.status(500).send({ message: "Server error!" });
     }
@@ -136,11 +148,18 @@ export default class TeamController {
       const member = await this.userServices.getById(memberId);
       const team = await this.teamServices.getById(teamId);
 
-      if (!member || !team || member.role !== role.member) {
+      if (
+        !member ||
+        !team ||
+        member.role !== role.member ||
+        member.status === status.unavailable
+      ) {
         response.status(404).send({ message: "Not found team or member" });
       }
 
-      return await this.teamServices.addMember(team, member._id);
+      const addTeamMember = await this.teamServices.addMember(team, member._id);
+      logger.info("Added team member: ", addTeamMember);
+      return response.status(204).send(addTeamMember);
     } catch (error) {
       return response.status(500).send({ message: "Server error!" });
     }
@@ -159,7 +178,12 @@ export default class TeamController {
         response.status(404).send({ message: "Not found team or member" });
       }
 
-      return await this.teamServices.removeMember(team, member._id);
+      const removeTeamMember = await this.teamServices.removeMember(
+        team,
+        member._id
+      );
+      logger.info("Removed team member: ", removeTeamMember);
+      return response.status(204).send(removeTeamMember);
     } catch (error) {
       return response.status(500).send({ message: "Server error!" });
     }
