@@ -40,6 +40,7 @@ export default class TeamController {
       const allTeams = await this.teamServices.getAll();
       return response.status(200).send(allTeams);
     } catch (error) {
+      logger.error("Error at Team.getAll controller: ", error);
       return response.status(500).send({ message: "Server error!" });
     }
   }
@@ -51,6 +52,7 @@ export default class TeamController {
       const team = await this.teamServices.getById(id);
       return response.status(200).send(this.teamServices.returnTeamData(team));
     } catch (error) {
+      logger.error("Error at Team.getById controller: ", error);
       return response.status(500).send({ message: "Server error!" });
     }
   }
@@ -116,6 +118,7 @@ export default class TeamController {
       logger.info("Added team leader: ", addTeamLeader);
       return response.status(204).send(addTeamLeader);
     } catch (error) {
+      logger.error("Error at Team.addLeader controller: ", error);
       return response.status(500).send({ message: "Server error!" });
     }
   }
@@ -135,6 +138,7 @@ export default class TeamController {
       logger.info("Removed team leader: ", removeTeamLeader);
       return response.status(204).send(removeTeamLeader);
     } catch (error) {
+      logger.error("Error at Team.removeLeader controller: ", error);
       return response.status(500).send({ message: "Server error!" });
     }
   }
@@ -161,6 +165,7 @@ export default class TeamController {
       logger.info("Added team member: ", addTeamMember);
       return response.status(204).send(addTeamMember);
     } catch (error) {
+      logger.error("Error at Team.addMember controller: ", error);
       return response.status(500).send({ message: "Server error!" });
     }
   }
@@ -185,6 +190,7 @@ export default class TeamController {
       logger.info("Removed team member: ", removeTeamMember);
       return response.status(204).send(removeTeamMember);
     } catch (error) {
+      logger.error("Error at Team.removeMember controller: ", error);
       return response.status(500).send({ message: "Server error!" });
     }
   }
@@ -198,6 +204,7 @@ export default class TeamController {
       if (!team) await this.teamServices.delete(teamId);
       return response.status(204).send({ message: "Deleted" });
     } catch (error) {
+      logger.error("Error at Team.deleteTeam controller: ", error);
       return response.status(500).send({ message: "Server error!" });
     }
   }

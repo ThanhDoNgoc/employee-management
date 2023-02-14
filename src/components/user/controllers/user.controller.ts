@@ -16,6 +16,7 @@ import { role } from "../utils/user.role";
 import IUserServices from "../services/user/iuser.services";
 import container from "../../../inversify/inversify.config";
 import { status } from "../utils/user.status";
+import logger from "../../../utils/logger";
 
 @controller("/user")
 export default class UserController {
@@ -58,6 +59,7 @@ export default class UserController {
     try {
       return await this.userServices.getAll();
     } catch (error) {
+      logger.error("Error at User.getAll controller: ", error);
       return response.status(500).send({ message: "Server error!" });
     }
   }
@@ -72,6 +74,7 @@ export default class UserController {
       const id = request.body.id;
       return await this.userServices.getById(id);
     } catch (error) {
+      logger.error("Error at User.getById controller: ", error);
       return response.status(500).send({ message: "Server error!" });
     }
   }
@@ -95,9 +98,10 @@ export default class UserController {
       user.status = status.available;
 
       const createdUser = await this.userServices.create(user);
-
+      logger.info("Created user: ", createdUser);
       return response.status(201).send(createdUser);
     } catch (error) {
+      logger.error("Error at User.createUser controller: ", error);
       return response.status(500).send({ message: "Server error!" });
     }
   }
@@ -132,10 +136,11 @@ export default class UserController {
         user.status = this.loadUserStatus(request.body.status);
       }
 
-      await this.userServices.updateById(_id, user);
-
+      const updatedUser = await this.userServices.updateById(_id, user);
+      logger.info("Updated user: ", updatedUser);
       return response.status(204).send({ message: "Updated" });
     } catch (error) {
+      logger.error("Error at User.updateUser controller: ", error);
       return response.status(500).send({ message: "Server error!" });
     }
   }
@@ -157,9 +162,11 @@ export default class UserController {
         return response.status(403).send({ message: "Forbidden" });
       }
 
-      await this.userServices.delete(_id);
+      const deletedUser = await this.userServices.delete(_id);
+      logger.info("Deleted user: ", deletedUser);
       return response.status(204).send({ message: "Deleted" });
     } catch (error) {
+      logger.error("Error at User.deleteUser controller: ", error);
       return response.status(500).send({ message: "Server error!" });
     }
   }
