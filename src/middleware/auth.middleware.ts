@@ -35,9 +35,9 @@ export async function authorization(
         catchError(error, response);
         return;
       }
-      console.log(decoded);
       const requesterId = decoded._id;
       const requester = await User.findById(requesterId);
+      request.teams = requester.teams;
       request.role = requester.role;
       next();
     });
