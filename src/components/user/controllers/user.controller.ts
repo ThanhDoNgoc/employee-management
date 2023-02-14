@@ -68,7 +68,6 @@ export default class UserController {
       const teamsData: ITeamReturnData[] = await this.teamServices.getByManyId(
         teams
       );
-      console.log(teamsData);
       const returnTeamsData: IUserTeamsReturnData[] = await Promise.all(
         teamsData.map(async (team) => {
           const membersInTeam: IUserReturnData[] =
@@ -95,8 +94,6 @@ export default class UserController {
           return teamInfo;
         })
       );
-      console.log("return data", returnTeamsData);
-
       return returnTeamsData;
     } catch (error) {
       logger.error("Error at User.getUsersInSameTeams controller: ", error);
