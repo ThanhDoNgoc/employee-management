@@ -32,6 +32,7 @@ const UserSchema: Schema = new Schema<IUser>({
   teams: [
     {
       type: Schema.Types.ObjectId,
+      ref: "Team",
     },
   ],
   isDeleted: {

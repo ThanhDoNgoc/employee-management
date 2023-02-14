@@ -9,11 +9,13 @@ const TeamSchema: Schema = new Schema<ITeam>({
   },
   leaderId: {
     type: Schema.Types.ObjectId,
+    ref: "User",
     default: null,
   },
   members: [
     {
       type: Schema.Types.ObjectId,
+      ref: "User",
     },
   ],
   isDeleted: {
