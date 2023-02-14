@@ -93,7 +93,7 @@ export default class UserController {
   )
   public async updateUser(request: Request, response: Response) {
     try {
-      const _id: string = request.pagams.id;
+      const _id: string = request.params.id;
       const user: IUserUpdate = request.body;
 
       const updateUser = await this.userServices.getById(_id);
@@ -101,7 +101,8 @@ export default class UserController {
       if (!updateUser) {
         return response.status(404).send({ message: "Not Found" });
       }
-      if (request.role === role.leader && updateUser !== role.member) {
+
+      if (request.role === role.leader && updateUser.role !== role.member) {
         return response.status(403).send({ message: "Forbidden" });
       }
 
@@ -128,13 +129,13 @@ export default class UserController {
   )
   public async deleteUser(request: Request, response: Response) {
     try {
-      const _id = request.pargams._id;
+      const _id = request.params.id;
 
       const updateUser = await this.userServices.getById(_id);
       if (!updateUser) {
         return response.status(404).send({ message: "Not Found" });
       }
-      if (request.role === role.leader && updateUser !== role.member) {
+      if (request.role === role.leader && updateUser.role !== role.member) {
         return response.status(403).send({ message: "Forbidden" });
       }
 

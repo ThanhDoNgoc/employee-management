@@ -13,7 +13,6 @@ export default interface IUser extends Document {
 }
 
 export interface IUserUpdate {
-  password?: string;
   name?: string;
   role?: role;
   status?: status;
