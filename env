@@ -1,4 +1,0 @@
-PORT = 3000
-MONGODB = "mongodb+srv://dongocthanh40:731391aa@cluster0.4kz7gt3.mongodb.net/employee_management"
-JWT_SECRET = "secret"
-JWT_EXPIRE_TIME = 3600
