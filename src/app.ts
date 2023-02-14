@@ -7,6 +7,9 @@ import { InversifyExpressServer } from "inversify-express-utils";
 
 import "./components/user/controllers/auth.controller";
 import "./components/user/controllers/user.controller";
+import "./components/team/controllers/team.controller";
+
+import logger from "./utils/logger";
 
 export class App {
   private app: Express;
@@ -27,7 +30,7 @@ export class App {
     ).build();
 
     appConfigured.listen(this.port, () => {
-      console.log(`Server listening on http://localhost:${this.port}`);
+      logger.info(`Server listening on http://localhost:${this.port}`);
     });
   }
 

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import logger from "../utils/logger";
 
 export default class MongodbConnection {
   private _conectionString: string = process.env.MONGODB;
@@ -9,10 +10,10 @@ export default class MongodbConnection {
       this.config();
 
       await this.mongodb.connect(this._conectionString, {}).then(async () => {
-        console.log("Successfully connected to the database");
+        logger.info("Successfully connected to the database");
       });
     } catch (error) {
-      console.log("Could not connect to the database. Exiting now...", error);
+      logger.error("Could not connect to the database. Exiting now...", error);
       process.exit();
     }
   }
