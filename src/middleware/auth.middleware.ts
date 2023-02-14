@@ -3,9 +3,11 @@ import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { TokenExpiredError } from "jsonwebtoken";
 import { role } from "../components/user/utils/user.role";
+import logger from "../utils/logger";
 
 function catchError(error, response) {
   if (error instanceof TokenExpiredError) {
+    logger.info("Access Token expired!", error.expiredAt);
     return response.status(401).send({ message: "Access Token expired!" });
   }
   return response.status(403).send({ message: "Forbidden!" });
@@ -36,6 +38,7 @@ export function isLogin(
       next();
     });
   } catch (error) {
+    logger.error("Error at isLogin middleware", error);
     return response.status(500).send({ message: "Server Error" });
   }
 }
@@ -47,13 +50,13 @@ export function isAdmin(
 ) {
   try {
     if (request.role === role.admin) {
-      request.role = role.admin;
       next();
       return;
     }
 
     return response.status(403).send({ message: "Forbidden!" });
   } catch (error) {
+    logger.error("Error at isAdmin middleware", error);
     return response.status(500).send({ message: "Server Error" });
   }
 }
@@ -71,6 +74,7 @@ export function isLeader(
 
     return response.status(403).send({ message: "Forbidden!" });
   } catch (error) {
+    logger.error("Error at isLeader middleware", error);
     return response.status(500).send({ message: "Server Error" });
   }
 }
@@ -87,6 +91,24 @@ export function canAccessUser(
     }
     return response.status(403).send({ message: "Forbidden!" });
   } catch (error) {
+    logger.error("Error at canAccessUser middleware", error);
+    return response.status(500).send({ message: "Server Error" });
+  }
+}
+
+export function canAccessTeam(
+  request: Request,
+  response: Response,
+  next: NextFunction
+) {
+  try {
+    if (request.role === role.admin) {
+      next();
+      return;
+    }
+    return response.status(403).send({ message: "Forbidden!" });
+  } catch (error) {
+    logger.error("Error at canAccessTeam middleware", error);
     return response.status(500).send({ message: "Server Error" });
   }
 }
