@@ -17,13 +17,25 @@ import IUserServices from "../services/user/iuser.services";
 import container from "../../../inversify/inversify.config";
 import { status } from "../utils/user.status";
 import logger from "../../../utils/logger";
+import ITeamServices from "../../team/services/iteam.services";
+import { Schema } from "mongoose";
+import {
+  IUserTeamsReturnData,
+  IMembersInSameTeamReturnData,
+} from "../utils/user.return.data";
+import ITeamReturnData from "../../team/utils/team.return.data";
+import IUserReturnData from "../utils/user.return.data";
 
-@controller("/user")
+@controller("/user", container.get<express.RequestHandler>("authorization"))
 export default class UserController {
   private userServices: IUserServices;
-
-  constructor(@inject(TYPES.User) _userServices: IUserServices) {
+  private teamServices: ITeamServices;
+  constructor(
+    @inject(TYPES.User) _userServices: IUserServices,
+    @inject(TYPES.Team) _teamServices: ITeamServices
+  ) {
     this.userServices = _userServices;
+    this.teamServices = _teamServices;
   }
 
   loadUserRole(inputRole: string): role {
@@ -49,12 +61,50 @@ export default class UserController {
         return status.available;
     }
   }
+  @httpGet("/")
+  public async getUsersInSameTeams(request: Request, response: Response) {
+    try {
+      const teams: Schema.Types.ObjectId[] = request.teams;
+      const teamsData: ITeamReturnData[] = await this.teamServices.getByManyId(
+        teams
+      );
+      console.log(teamsData);
+      const returnTeamsData: IUserTeamsReturnData[] = await Promise.all(
+        teamsData.map(async (team) => {
+          const membersInTeam: IUserReturnData[] =
+            await this.userServices.getByManyId(team.members);
+          const membersInTeamReturnData: IMembersInSameTeamReturnData[] =
+            membersInTeam.map((member) => {
+              return {
+                name: member.name,
+                status: member.status,
+                role: member.role,
+              };
+            });
 
-  @httpGet(
-    "/all",
-    container.get<express.RequestHandler>("authorization"),
-    container.get<express.RequestHandler>("canModifyUser")
-  )
+          const leader: IUser = await this.userServices.getById(team.leaderId);
+          let leadername: string | null = null;
+          if (leader) {
+            leadername = leader.name;
+          }
+          const teamInfo: IUserTeamsReturnData = {
+            teamname: team.name,
+            leadername: leadername,
+            members: membersInTeamReturnData,
+          };
+          return teamInfo;
+        })
+      );
+      console.log("return data", returnTeamsData);
+
+      return returnTeamsData;
+    } catch (error) {
+      logger.error("Error at User.getUsersInSameTeams controller: ", error);
+      return response.status(500).send({ message: "Server error!" });
+    }
+  }
+
+  @httpGet("/all", container.get<express.RequestHandler>("canModifyUser"))
   public async getAll(response: Response) {
     try {
       return await this.userServices.getAll();
@@ -64,11 +114,7 @@ export default class UserController {
     }
   }
 
-  @httpGet(
-    "/:id",
-    container.get<express.RequestHandler>("authorization"),
-    container.get<express.RequestHandler>("canModifyUser")
-  )
+  @httpGet("/:id", container.get<express.RequestHandler>("canModifyUser"))
   public async getById(request: Request, response: Response) {
     try {
       const id = request.body.id;
@@ -80,11 +126,7 @@ export default class UserController {
     }
   }
 
-  @httpPost(
-    "/",
-    container.get<express.RequestHandler>("authorization"),
-    container.get<express.RequestHandler>("canModifyUser")
-  )
+  @httpPost("/", container.get<express.RequestHandler>("canModifyUser"))
   public async createUser(request: Request, response: Response) {
     try {
       const user: IUser = request.body;
@@ -107,11 +149,7 @@ export default class UserController {
     }
   }
 
-  @httpPut(
-    "/:id",
-    container.get<express.RequestHandler>("authorization"),
-    container.get<express.RequestHandler>("canModifyUser")
-  )
+  @httpPut("/:id", container.get<express.RequestHandler>("canModifyUser"))
   public async updateUser(request: Request, response: Response) {
     try {
       const _id: string = request.params.id;
@@ -146,11 +184,7 @@ export default class UserController {
     }
   }
 
-  @httpDelete(
-    "/:id",
-    container.get<express.RequestHandler>("authorization"),
-    container.get<express.RequestHandler>("canModifyUser")
-  )
+  @httpDelete("/:id", container.get<express.RequestHandler>("canModifyUser"))
   public async deleteUser(request: Request, response: Response) {
     try {
       const _id = request.params.id;
