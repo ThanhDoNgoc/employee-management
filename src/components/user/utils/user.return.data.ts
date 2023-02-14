@@ -16,3 +16,15 @@ export interface IUserDeletedReturnData {
   name: string;
   isDeleted: boolean;
 }
+
+export interface IMembersInSameTeamReturnData {
+  name: string;
+  status: status;
+  role: role;
+}
+
+export interface IUserTeamsReturnData {
+  teamname: string;
+  leadername: string | null;
+  members: IMembersInSameTeamReturnData[];
+}
