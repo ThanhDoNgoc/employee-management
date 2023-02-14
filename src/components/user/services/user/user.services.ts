@@ -3,29 +3,48 @@ import IUser from "../../model/iuser.model";
 import User from "../../model/user.model";
 
 import IUserServices from "./iuser.services";
+import IUserReturnData from "../../utils/user.return.data";
+import { IUserDeletedReturnData } from "../../utils/user.return.data";
 
 @injectable()
 export default class UserServices implements IUserServices {
-  async create(user: IUser) {
-    const newUser = new User(user);
-    return await newUser.save();
+  returnUserData(user: IUser): IUserReturnData {
+    return {
+      username: user.username,
+      name: user.name,
+      role: user.role,
+      status: user.status,
+      teams: user.teams,
+    };
   }
 
-  async updateById(_id: string, user: IUser) {
-    return await User.findByIdAndUpdate(_id, user).then((user: IUser) => {
-      return user;
-    });
+  async create(user: IUser): Promise<IUserReturnData> {
+    const newUser = new User(user);
+    const createdUser = await newUser.save();
+    return this.returnUserData(createdUser);
   }
-  async getAll() {
-    return await User.find({ isDeleted: false });
+
+  async updateById(_id: string, user: IUser): Promise<IUserReturnData> {
+    const updatedUser = await User.findByIdAndUpdate(_id, user);
+    return this.returnUserData(updatedUser);
   }
-  async getById(_id: string) {
-    return await User.findById(_id);
+  async getAll(): Promise<IUserReturnData[]> {
+    const allUser = await User.find({ isDeleted: false });
+    return allUser.map((user) => this.returnUserData(user));
   }
-  async delete(_id: string) {
+  async getById(_id: string): Promise<IUserReturnData> {
+    const user = await User.findById(_id);
+    return this.returnUserData(user);
+  }
+  async delete(_id: string): Promise<IUserDeletedReturnData> {
     return await User.findByIdAndUpdate(_id, { isDeleted: true }).then(
       (user: IUser) => {
-        return user;
+        const returnDeletedUser: IUserDeletedReturnData = {
+          username: user.username,
+          name: user.name,
+          isDeleted: true,
+        };
+        return returnDeletedUser;
       }
     );
   }
