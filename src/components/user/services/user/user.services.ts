@@ -10,6 +10,7 @@ import { IUserDeletedReturnData } from "../../utils/user.return.data";
 export default class UserServices implements IUserServices {
   returnUserData(user: IUser): IUserReturnData {
     return {
+      _id: user._id,
       username: user.username,
       name: user.name,
       role: user.role,
