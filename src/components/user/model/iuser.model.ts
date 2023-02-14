@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Schema } from "mongoose";
 import { role } from "../utils/user.role";
 import { status } from "../utils/user.status";
 
@@ -8,7 +8,7 @@ export default interface IUser extends Document {
   name: string;
   role?: role;
   status?: status;
-  teams?: string[];
+  teams?: Schema.Types.ObjectId[];
   isDeleted?: boolean;
 }
 

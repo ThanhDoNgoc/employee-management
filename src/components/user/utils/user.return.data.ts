@@ -8,7 +8,7 @@ export default interface IUserReturnData {
   name: string;
   status: status;
   role: role;
-  teams: string[];
+  teams: Schema.Types.ObjectId[];
 }
 
 export interface IUserDeletedReturnData {
