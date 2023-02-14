@@ -35,7 +35,7 @@ export default class TeamController {
   }
 
   @httpGet("/")
-  public async getAll(response: Response) {
+  public async getAll(request: Request, response: Response) {
     try {
       const allTeams = await this.teamServices.getAll();
       return response.status(200).send(allTeams);
