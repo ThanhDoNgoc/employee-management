@@ -9,6 +9,7 @@ const TeamSchema: Schema = new Schema<ITeam>({
   },
   leaderId: {
     type: Schema.Types.ObjectId,
+    default: null,
   },
   members: [
     {
