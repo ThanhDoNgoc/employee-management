@@ -62,6 +62,20 @@ export default class UserController {
     }
   }
 
+  @httpGet(
+    "/:id",
+    container.get<express.RequestHandler>("isLogin"),
+    container.get<express.RequestHandler>("canAccessUser")
+  )
+  public async getById(request: Request, response: Response) {
+    try {
+      const id = request.body.id;
+      return await this.userServices.getById(id);
+    } catch (error) {
+      return response.status(500).send({ message: "Server error!" });
+    }
+  }
+
   @httpPost(
     "/",
     container.get<express.RequestHandler>("isLogin"),
