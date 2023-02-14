@@ -161,6 +161,12 @@ export default class TeamController {
         response.status(404).send({ message: "Not found team or member" });
       }
 
+      const memberIndex = team.members.indexOf(memberId);
+      if (memberIndex !== -1) {
+        return response.status(200).send("Team already have this member");
+      }
+
+      await this.userServices.addTeam(member, team._id);
       const addTeamMember = await this.teamServices.addMember(team, member._id);
       logger.info("Added team member: ", addTeamMember);
       return response.status(204).send(addTeamMember);

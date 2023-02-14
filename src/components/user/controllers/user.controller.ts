@@ -72,7 +72,8 @@ export default class UserController {
   public async getById(request: Request, response: Response) {
     try {
       const id = request.body.id;
-      return await this.userServices.getById(id);
+      const user = await this.userServices.getById(id);
+      return response.status(200).send(this.userServices.returnUserData(user));
     } catch (error) {
       logger.error("Error at User.getById controller: ", error);
       return response.status(500).send({ message: "Server error!" });

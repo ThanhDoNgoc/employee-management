@@ -5,6 +5,7 @@ import User from "../../model/user.model";
 import IUserServices from "./iuser.services";
 import IUserReturnData from "../../utils/user.return.data";
 import { IUserDeletedReturnData } from "../../utils/user.return.data";
+import { Schema } from "mongoose";
 
 @injectable()
 export default class UserServices implements IUserServices {
@@ -33,9 +34,8 @@ export default class UserServices implements IUserServices {
     const allUser = await User.find({ isDeleted: false });
     return allUser.map((user) => this.returnUserData(user));
   }
-  async getById(_id: string): Promise<IUserReturnData> {
-    const user = await User.findById(_id);
-    return this.returnUserData(user);
+  async getById(_id: string): Promise<IUser> {
+    return await User.findById(_id);
   }
   async delete(_id: string): Promise<IUserDeletedReturnData> {
     return await User.findByIdAndUpdate(_id, { isDeleted: true }).then(
@@ -48,5 +48,13 @@ export default class UserServices implements IUserServices {
         return returnDeletedUser;
       }
     );
+  }
+  async addTeam(
+    user: IUser,
+    teamId: Schema.Types.ObjectId
+  ): Promise<IUserReturnData> {
+    user.teams.push(teamId);
+    await user.save();
+    return this.returnUserData(user);
   }
 }
