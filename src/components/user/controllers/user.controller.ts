@@ -75,6 +75,7 @@ export default class UserController {
           const membersInTeamReturnData: IMembersInSameTeamReturnData[] =
             membersInTeam.map((member) => {
               return {
+                _id: member._id.toString(),
                 name: member.name,
                 status: member.status,
                 role: member.role,
@@ -83,11 +84,14 @@ export default class UserController {
 
           const leader: IUser = await this.userServices.getById(team.leaderId);
           let leadername: string | null = null;
+          let leaderid: string | null = null;
           if (leader) {
             leadername = leader.name;
+            leaderid = leader._id;
           }
           const teamInfo: IUserTeamsReturnData = {
             teamname: team.name,
+            leaderid: leaderid,
             leadername: leadername,
             members: membersInTeamReturnData,
           };

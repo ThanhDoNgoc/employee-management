@@ -18,6 +18,7 @@ export interface IUserDeletedReturnData {
 }
 
 export interface IMembersInSameTeamReturnData {
+  _id: string;
   name: string;
   status: status;
   role: role;
@@ -25,6 +26,7 @@ export interface IMembersInSameTeamReturnData {
 
 export interface IUserTeamsReturnData {
   teamname: string;
+  leaderid: string;
   leadername: string | null;
   members: IMembersInSameTeamReturnData[];
 }
