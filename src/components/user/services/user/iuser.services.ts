@@ -17,4 +17,12 @@ export default interface IUserServices {
     _id: string | Schema.Types.ObjectId,
     status: status
   ): Promise<IUserReturnData>;
+  removeTeam(
+    user: IUser,
+    teamId: Schema.Types.ObjectId
+  ): Promise<IUserReturnData>;
+  removeTeamInManyUsers(
+    _ids: Schema.Types.ObjectId[],
+    teamId: Schema.Types.ObjectId
+  );
 }

@@ -69,4 +69,24 @@ export default class UserServices implements IUserServices {
     const updatedUser = await User.findByIdAndUpdate(_id, { status: status });
     return this.returnUserData(updatedUser);
   }
+
+  async removeTeam(
+    user: IUser,
+    teamId: Schema.Types.ObjectId
+  ): Promise<IUserReturnData> {
+    const teamIndex = user.teams.indexOf(teamId);
+    user.teams.splice(teamIndex, 1);
+    await user.save();
+    return this.returnUserData(user);
+  }
+
+  async removeTeamInManyUsers(
+    _ids: Schema.Types.ObjectId[],
+    teamId: Schema.Types.ObjectId
+  ) {
+    const users = await User.find({ _id: { $in: _ids } });
+    await users.forEach(async (users) => {
+      await this.removeTeam(users, teamId);
+    });
+  }
 }
