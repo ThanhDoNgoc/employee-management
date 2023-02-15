@@ -64,7 +64,6 @@ export default class TeamController {
       if ((await this.teamServices.getByName(name)) !== null) {
         return response.status(400).send({ message: "Name exits" });
       }
-      logger.info(" pass name valid");
       const newTeam = await this.teamServices.create(name);
       logger.info("Created new Team: ", newTeam);
       return response.status(201).send("Created team: ", newTeam);
@@ -188,11 +187,12 @@ export default class TeamController {
       if (!member || !team) {
         response.status(404).send({ message: "Not found team or member" });
       }
-
+      await this.userServices.removeTeam(member, team._id);
       const removeTeamMember = await this.teamServices.removeMember(
         team,
         member._id
       );
+
       logger.info("Removed team member: ", removeTeamMember);
       return response.status(204).send(removeTeamMember);
     } catch (error) {
@@ -206,8 +206,8 @@ export default class TeamController {
     try {
       const teamId = request.params.id;
       const team = await this.teamServices.getById(teamId);
-
-      if (!team) await this.teamServices.delete(teamId);
+      await this.userServices.removeTeamInManyUsers(team.members, team._id);
+      await this.teamServices.delete(teamId);
       return response.status(204).send({ message: "Deleted" });
     } catch (error) {
       logger.error("Error at Team.deleteTeam controller: ", error);
