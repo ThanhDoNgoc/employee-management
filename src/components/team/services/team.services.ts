@@ -95,4 +95,14 @@ export default class TeamServices implements ITeamServices {
     }
     return this.returnTeamData(team);
   }
+
+  public async removeMemberInManyTeams(
+    _ids: Schema.Types.ObjectId[],
+    userId: Schema.Types.ObjectId
+  ) {
+    const teams = await Team.find({ _id: { $in: _ids } });
+    await teams.forEach(async (team) => {
+      this.removeMember(team, userId);
+    });
+  }
 }

@@ -28,4 +28,9 @@ export default interface ITeamServices {
   ): Promise<ITeamReturnData>;
 
   delete(team: ITeam);
+
+  removeMemberInManyTeams(
+    _ids: Schema.Types.ObjectId[],
+    userId: Schema.Types.ObjectId
+  );
 }
