@@ -218,15 +218,20 @@ export default class UserController {
     try {
       const _id = request.params.id;
 
-      const updateUser = await this.userServices.getById(_id);
-      if (!updateUser) {
+      const deleteUser = await this.userServices.getById(_id);
+      if (!deleteUser) {
         return response.status(404).send({ message: "Not Found" });
       }
-      if (request.role === role.leader && updateUser.role !== role.member) {
+      if (request.role === role.leader && deleteUser.role !== role.member) {
         return response.status(403).send({ message: "Forbidden" });
       }
 
+      await this.teamServices.removeMemberInManyTeams(
+        deleteUser.teams,
+        deleteUser._id
+      );
       const deletedUser = await this.userServices.delete(_id);
+
       logger.info("Deleted user: ", deletedUser);
       return response.status(204).send({ message: "Deleted" });
     } catch (error) {
