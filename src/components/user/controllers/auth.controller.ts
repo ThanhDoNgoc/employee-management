@@ -16,18 +16,18 @@ export default class AuthController {
     this.authServices = _authServices;
   }
 
-  @httpGet("")
+  @httpPost("")
   public async login(request: Request, response: Response) {
     try {
       const username: string = request.body.username;
       const password: string = request.body.password;
       return await this.authServices.login(username, password);
     } catch (error) {
-      return response.status(405).send({ message: "Server error!" });
+      return response.status(500).send({ message: "Server error!" });
     }
   }
 
-  @httpPost("")
+  @httpPost("/register")
   public async register(request: Request) {
     try {
       const user: IUser = request.body;
