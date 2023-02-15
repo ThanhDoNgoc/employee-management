@@ -181,6 +181,34 @@ export default class UserController {
     }
   }
 
+  @httpPut(
+    "/status/:id",
+    container.get<express.RequestHandler>("canModifyUser")
+  )
+  public async updateUserStatus(request: Request, response: Response) {
+    try {
+      const _id: string = request.params.id;
+      const status: status = this.loadUserStatus(request.body.status);
+
+      const updateUser = await this.userServices.getById(_id);
+
+      if (!updateUser) {
+        return response.status(404).send({ message: "Not Found" });
+      }
+
+      if (request.role === role.leader && updateUser.role !== role.member) {
+        return response.status(403).send({ message: "Forbidden" });
+      }
+
+      const updatedUser = await this.userServices.updateStatusById(_id, status);
+      logger.info("Updated user status: ", updatedUser);
+      return response.status(204).send({ message: "Updated" });
+    } catch (error) {
+      logger.error("Error at User.updateUser controller: ", error);
+      return response.status(500).send({ message: "Server error!" });
+    }
+  }
+
   @httpDelete("/:id", container.get<express.RequestHandler>("canModifyUser"))
   public async deleteUser(request: Request, response: Response) {
     try {
