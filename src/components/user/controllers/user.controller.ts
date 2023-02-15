@@ -19,12 +19,12 @@ import { status } from "../utils/user.status";
 import logger from "../../../utils/logger";
 import ITeamServices from "../../team/services/iteam.services";
 import { Schema } from "mongoose";
-import {
+import ITeamReturnData from "../../team/utils/team.return.data";
+import IUserReturnData, {
   IUserTeamsReturnData,
   IMembersInSameTeamReturnData,
+  IUserDetailReturnData,
 } from "../utils/user.return.data";
-import ITeamReturnData from "../../team/utils/team.return.data";
-import IUserReturnData from "../utils/user.return.data";
 
 @controller("/user", container.get<express.RequestHandler>("authorization"))
 export default class UserController {
@@ -118,9 +118,20 @@ export default class UserController {
   @httpGet("/:id", container.get<express.RequestHandler>("canModifyUser"))
   public async getById(request: Request, response: Response) {
     try {
-      const id = request.body.id;
-      const user = await this.userServices.getById(id);
-      return response.status(200).send(this.userServices.returnUserData(user));
+      const id = request.params.id;
+      const user: IUser = await this.userServices.getById(id);
+      const userTeams = await this.teamServices.getByManyId(user.teams);
+      const userTeamsName: string[] = userTeams.map((team) => team.name);
+      const userDetailReturnData: IUserDetailReturnData = {
+        _id: user._id,
+        name: user.name,
+        username: user.username,
+        role: user.role,
+        status: user.status,
+        teams: userTeamsName,
+      };
+
+      return response.status(200).send(userDetailReturnData);
     } catch (error) {
       logger.error("Error at User.getById controller: ", error);
       return response.status(500).send({ message: "Server error!" });

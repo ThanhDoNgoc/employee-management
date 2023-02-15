@@ -30,3 +30,11 @@ export interface IUserTeamsReturnData {
   leadername: string | null;
   members: IMembersInSameTeamReturnData[];
 }
+export interface IUserDetailReturnData {
+  _id: Schema.Types.ObjectId;
+  username: string;
+  name: string;
+  status: status;
+  role: role;
+  teams: string[];
+}
