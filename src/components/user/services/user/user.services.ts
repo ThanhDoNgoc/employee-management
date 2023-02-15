@@ -6,6 +6,7 @@ import IUserServices from "./iuser.services";
 import IUserReturnData from "../../utils/user.return.data";
 import { IUserDeletedReturnData } from "../../utils/user.return.data";
 import { Schema } from "mongoose";
+import { status } from "../../utils/user.status";
 
 @injectable()
 export default class UserServices implements IUserServices {
@@ -60,5 +61,12 @@ export default class UserServices implements IUserServices {
     user.teams.push(teamId);
     await user.save();
     return this.returnUserData(user);
+  }
+  async updateStatusById(
+    _id: string | Schema.Types.ObjectId,
+    status: status
+  ): Promise<IUserReturnData> {
+    const updatedUser = await User.findByIdAndUpdate(_id, { status: status });
+    return this.returnUserData(updatedUser);
   }
 }
