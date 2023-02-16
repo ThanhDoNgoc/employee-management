@@ -26,6 +26,7 @@ export interface IMembersInSameTeamReturnData {
 }
 
 export interface IUserTeamsReturnData {
+  _id: string;
   teamname: string;
   leaderid: string;
   leadername: string | null;

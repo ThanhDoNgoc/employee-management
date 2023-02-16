@@ -91,6 +91,7 @@ export default class UserController {
             leaderid = leader._id;
           }
           const teamInfo: IUserTeamsReturnData = {
+            _id: team._id.toString(),
             teamname: team.name,
             leaderid: leaderid,
             leadername: leadername,
@@ -99,6 +100,7 @@ export default class UserController {
           return teamInfo;
         })
       );
+      logger.info("send data ");
       return returnTeamsData;
     } catch (error) {
       logger.error("Error at User.getUsersInSameTeams controller: ", error);
