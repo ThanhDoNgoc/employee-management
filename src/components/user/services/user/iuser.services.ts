@@ -2,6 +2,7 @@ import { Schema } from "mongoose";
 import IUser, { IUserUpdate } from "../../model/iuser.model";
 import IUserReturnData from "../../utils/user.return.data";
 import { IUserDeletedReturnData } from "../../utils/user.return.data";
+import { role } from "../../utils/user.role";
 import { status } from "../../utils/user.status";
 
 export default interface IUserServices {
@@ -11,6 +12,7 @@ export default interface IUserServices {
   getAll(): Promise<IUserReturnData[]>;
   getById(_id: string | Schema.Types.ObjectId): Promise<IUser>;
   getByManyId(_ids: Schema.Types.ObjectId[]): Promise<IUserReturnData[]>;
+  getByRole(role: role): Promise<IUserReturnData[]>;
   delete(_id: string): Promise<IUserDeletedReturnData>;
   addTeam(user: IUser, teamId: Schema.Types.ObjectId): Promise<IUserReturnData>;
   updateStatusById(

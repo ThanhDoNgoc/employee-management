@@ -115,6 +115,21 @@ export default class UserController {
     }
   }
 
+  @httpGet(
+    "/role/:role",
+    container.get<express.RequestHandler>("canModifyUser")
+  )
+  public async getByRole(request: Request, response: Response) {
+    try {
+      const role: role = this.loadUserRole(request.params.role);
+      const users = await this.userServices.getByRole(role);
+      return response.status(200).send(users);
+    } catch (error) {
+      logger.error("Error at User.getById controller: ", error);
+      return response.status(500).send({ message: "Server error!" });
+    }
+  }
+
   @httpGet("/:id", container.get<express.RequestHandler>("canModifyUser"))
   public async getById(request: Request, response: Response) {
     try {

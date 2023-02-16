@@ -7,6 +7,7 @@ import IUserReturnData from "../../utils/user.return.data";
 import { IUserDeletedReturnData } from "../../utils/user.return.data";
 import { Schema } from "mongoose";
 import { status } from "../../utils/user.status";
+import { role } from "../../utils/user.role";
 
 @injectable()
 export default class UserServices implements IUserServices {
@@ -40,7 +41,15 @@ export default class UserServices implements IUserServices {
   }
   async getByManyId(_ids: Schema.Types.ObjectId[]): Promise<IUserReturnData[]> {
     const users = await User.find({ _id: { $in: _ids } });
-    return users.map((team) => this.returnUserData(team));
+    return users.map((user) => this.returnUserData(user));
+  }
+  async getByRole(role: role): Promise<IUserReturnData[]> {
+    const users = await User.find({
+      role: role,
+      isDeleted: false,
+      status: status.available,
+    });
+    return users.map((user) => this.returnUserData(user));
   }
   async delete(_id: string): Promise<IUserDeletedReturnData> {
     return await User.findByIdAndUpdate(_id, { isDeleted: true }).then(
