@@ -23,11 +23,7 @@ import {
   ITeamsReturnData,
 } from "../utils/team.return.data";
 
-@controller(
-  "/team",
-  container.get<express.RequestHandler>("authorization"),
-  container.get<express.RequestHandler>("canModifyTeam")
-)
+@controller("/team", container.get<express.RequestHandler>("authorization"))
 export default class TeamController {
   private teamServices: ITeamServices;
   private userServices: IUserServices;
@@ -39,7 +35,7 @@ export default class TeamController {
     this.userServices = _userServices;
   }
 
-  @httpGet("/")
+  @httpGet("/", container.get<express.RequestHandler>("canModifyTeam"))
   public async getAll(request: Request, response: Response) {
     try {
       const allTeams = await this.teamServices.getAll();
@@ -103,7 +99,7 @@ export default class TeamController {
     }
   }
 
-  @httpPost("")
+  @httpPost("", container.get<express.RequestHandler>("canModifyTeam"))
   public async createTeam(request: Request, response: Response) {
     try {
       const name: string = request.body.name;
@@ -119,7 +115,7 @@ export default class TeamController {
     }
   }
 
-  @httpPut("/:id")
+  @httpPut("/:id", container.get<express.RequestHandler>("canModifyTeam"))
   public async updateTeam(request: Request, response: Response) {
     try {
     } catch (error) {
@@ -127,7 +123,10 @@ export default class TeamController {
     }
   }
 
-  @httpPut("/addLeader/:id")
+  @httpPut(
+    "/addLeader/:id",
+    container.get<express.RequestHandler>("canModifyTeam")
+  )
   public async addLeader(request: Request, response: Response) {
     try {
       const leaderId = request.body.id;
@@ -158,8 +157,9 @@ export default class TeamController {
           .status(404)
           .send({ message: "Not found team or leader" });
       }
-
+      await this.userServices.addTeam(leader, team._id);
       const addTeamLeader = await this.teamServices.addLeader(team, leader._id);
+
       logger.info("Added team leader: ", addTeamLeader);
       return response.status(204).send(addTeamLeader);
     } catch (error) {
@@ -168,7 +168,10 @@ export default class TeamController {
     }
   }
 
-  @httpPut("/removeLeader/:id")
+  @httpPut(
+    "/removeLeader/:id",
+    container.get<express.RequestHandler>("canModifyTeam")
+  )
   public async removeLeader(request: Request, response: Response) {
     try {
       const teamId = request.params.id;
@@ -247,7 +250,7 @@ export default class TeamController {
     }
   }
 
-  @httpDelete("/:id")
+  @httpDelete("/:id", container.get<express.RequestHandler>("canModifyTeam"))
   public async deleteTeam(request: Request, response: Response) {
     try {
       const teamId = request.params.id;
