@@ -108,7 +108,7 @@ export default class TeamController {
       }
       const newTeam = await this.teamServices.create(name);
       logger.info("Created new Team: ", newTeam);
-      return response.status(201).send("Created team: ", newTeam);
+      return response.status(201).send({ message: "Created team" });
     } catch (error) {
       logger.error("Error at createTeam ", error);
       return response.status(500).send({ message: "Server error!" });
@@ -161,7 +161,7 @@ export default class TeamController {
       const addTeamLeader = await this.teamServices.addLeader(team, leader._id);
 
       logger.info("Added team leader: ", addTeamLeader);
-      return response.status(204).send(addTeamLeader);
+      return response.status(204).send({ message: "Added" });
     } catch (error) {
       logger.error("Error at Team.addLeader controller: ", error);
       return response.status(500).send({ message: "Server error!" });
@@ -181,10 +181,11 @@ export default class TeamController {
       if (!team) {
         response.status(404).send({ message: "Not found team or leader" });
       }
-
+      const teamLeader = await this.userServices.getById(team.leaderId);
+      await this.userServices.removeTeam(teamLeader, team._id);
       const removeTeamLeader = await this.teamServices.removeLeader(team);
       logger.info("Removed team leader: ", removeTeamLeader);
-      return response.status(204).send(removeTeamLeader);
+      return response.status(204).send({ message: "removed leader" });
     } catch (error) {
       logger.error("Error at Team.removeLeader controller: ", error);
       return response.status(500).send({ message: "Server error!" });
@@ -211,13 +212,15 @@ export default class TeamController {
 
       const memberIndex = team.members.indexOf(memberId);
       if (memberIndex !== -1) {
-        return response.status(200).send("Team already have this member");
+        return response
+          .status(200)
+          .send({ message: "Team already have this member" });
       }
 
       await this.userServices.addTeam(member, team._id);
       const addTeamMember = await this.teamServices.addMember(team, member._id);
       logger.info("Added team member: ", addTeamMember);
-      return response.status(204).send(addTeamMember);
+      return response.status(204).send({ message: "Added member" });
     } catch (error) {
       logger.error("Error at Team.addMember controller: ", error);
       return response.status(500).send({ message: "Server error!" });
@@ -243,7 +246,7 @@ export default class TeamController {
       );
 
       logger.info("Removed team member: ", removeTeamMember);
-      return response.status(204).send(removeTeamMember);
+      return response.status(204).send({ message: "removed member" });
     } catch (error) {
       logger.error("Error at Team.removeMember controller: ", error);
       return response.status(500).send({ message: "Server error!" });
@@ -255,8 +258,10 @@ export default class TeamController {
     try {
       const teamId = request.params.id;
       const team = await this.teamServices.getById(teamId);
+      const leader = await this.userServices.getById(team.leaderId);
       await this.userServices.removeTeamInManyUsers(team.members, team._id);
-      await this.teamServices.delete(teamId);
+      await this.userServices.removeTeam(leader, team._id);
+      await this.teamServices.delete(team);
       return response.status(204).send({ message: "Deleted" });
     } catch (error) {
       logger.error("Error at Team.deleteTeam controller: ", error);
