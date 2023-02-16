@@ -77,6 +77,7 @@ export default class UserController {
               return {
                 _id: member._id.toString(),
                 name: member.name,
+                username: member.username,
                 status: member.status,
                 role: member.role,
               };

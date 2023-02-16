@@ -20,6 +20,7 @@ export interface IUserDeletedReturnData {
 export interface IMembersInSameTeamReturnData {
   _id: string;
   name: string;
+  username: string;
   status: status;
   role: role;
 }
