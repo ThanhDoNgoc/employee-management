@@ -34,13 +34,13 @@ export default class AuthController {
       user.teams = [];
       if (request.body.role) {
         switch (request.body.role) {
-          case "admin":
+          case "Admin":
             user.role = role.admin;
             break;
-          case "leader":
+          case "Leader":
             user.role = role.leader;
             break;
-          case "member":
+          case "Member":
             user.role = role.member;
             break;
           default:

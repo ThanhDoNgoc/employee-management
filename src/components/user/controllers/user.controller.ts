@@ -40,11 +40,11 @@ export default class UserController {
 
   loadUserRole(inputRole: string): role {
     switch (inputRole) {
-      case "admin":
+      case "Admin":
         return role.admin;
-      case "leader":
+      case "Leader":
         return role.leader;
-      case "member":
+      case "Member":
         return role.member;
       default:
         return role.member;
@@ -53,9 +53,9 @@ export default class UserController {
 
   loadUserStatus(inputStatus: string): status {
     switch (inputStatus) {
-      case "available":
+      case "Available":
         return status.available;
-      case "unavailable":
+      case "Unavailable":
         return status.unavailable;
       default:
         return status.available;
@@ -142,6 +142,7 @@ export default class UserController {
   public async createUser(request: Request, response: Response) {
     try {
       const user: IUser = request.body;
+      user.password = "1";
       user.teams = [];
 
       if (request.body.role) {
