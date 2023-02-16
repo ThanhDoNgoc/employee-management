@@ -17,6 +17,11 @@ import IUserServices from "../../user/services/user/iuser.services";
 import logger from "../../../utils/logger";
 import { role } from "../../user/utils/user.role";
 import { status } from "../../user/utils/user.status";
+import {
+  IMember,
+  ITeamDetailReturnData,
+  ITeamsReturnData,
+} from "../utils/team.return.data";
 
 @controller(
   "/team",
@@ -38,19 +43,60 @@ export default class TeamController {
   public async getAll(request: Request, response: Response) {
     try {
       const allTeams = await this.teamServices.getAll();
-      return response.status(200).send(allTeams);
+      const returnAllTeams: ITeamsReturnData[] = await Promise.all(
+        allTeams.map(async (team) => {
+          const leader = await this.userServices.getById(team.leaderId);
+          const leaderReturnData: IMember | null =
+            leader === null
+              ? null
+              : {
+                  _id: leader._id,
+                  name: leader.name,
+                  username: leader.username,
+                };
+          const teamData: ITeamsReturnData = {
+            _id: team._id,
+            name: team.name,
+            leader: leaderReturnData,
+          };
+          return teamData;
+        })
+      );
+      return response.status(200).send(returnAllTeams);
     } catch (error) {
       logger.error("Error at Team.getAll controller: ", error);
       return response.status(500).send({ message: "Server error!" });
     }
   }
 
-  @httpGet("/details:id")
+  @httpGet("/details/:id")
   public async getById(request: Request, response: Response) {
     try {
-      const id = request.body.id;
+      const id = request.params.id;
       const team = await this.teamServices.getById(id);
-      return response.status(200).send(this.teamServices.returnTeamData(team));
+      const leader: IMember | null = await this.userServices.getById(
+        team.leaderId
+      );
+      const leaderReturnData: IMember | null =
+        leader === null
+          ? null
+          : {
+              _id: leader._id,
+              name: leader.name,
+              username: leader.username,
+            };
+      const members: IMember[] = await Promise.all(
+        team.members.map(async (memberId) => {
+          return await this.userServices.getById(memberId);
+        })
+      );
+      const returnTeamDetail: ITeamDetailReturnData = {
+        _id: team._id,
+        name: team.name,
+        leader: leaderReturnData,
+        members: members,
+      };
+      return response.status(200).send(returnTeamDetail);
     } catch (error) {
       logger.error("Error at Team.getById controller: ", error);
       return response.status(500).send({ message: "Server error!" });
